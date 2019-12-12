@@ -1,2 +1,2 @@
 # Pyporwave
-A Python program to vaporwav-ify any song you want.
+A Python program to vaporwave-ify any song you want.
