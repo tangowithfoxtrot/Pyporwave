@@ -1,0 +1,6 @@
+This project is based on youtube-dl, python-audio-effects, pydub, and librosa. Thanks you to all of the developers involed in them.
+
+https://github.com/ytdl-org/youtube-dl/
+https://github.com/carlthome/python-audio-effects
+https://github.com/jiaaro/pydub/
+https://github.com/librosa/librosa
