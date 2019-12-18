@@ -2,20 +2,36 @@
 # DONE: Add mp3 conversion.
 # TODO: Add bpm analysis for song 'chopping'.
 
-from pysndfx import AudioEffectsChain 
-from pydub import AudioSegment
-import youtube_dl
+import hashlib
 import os
-import time
+import sys
+import uuid
 
-# # infile gets stored as a string.
-infile = input('Ｓｅａｒｃｈ　ｆｏｒ　ａ　ｓｏｎｇ：　')
-print('Ｓｅａｒｃｈｉｎｇ．．．')
+import youtube_dl
 
-ydl_opts = {
+from pysndfx import AudioEffectsChain
+from pydub import AudioSegment
+
+vw_fx_chain = (
+    AudioEffectsChain()
+    .speed(0.87)  # 0.87 for Floral Shoppe
+    # .chorus(0.4, 0.6, [[55, 0.4, 0.55, .5, 't']])
+    .reverb(
+       reverberance=30,
+       hf_damping=50,
+       room_scale=100,
+       stereo_depth=100,
+       pre_delay=20,
+       wet_gain=0,
+       wet_only=False
+    )
+)
+
+output_dir = 'output'
+
+ydl_config = {
     'quiet': True,
     'format': 'bestaudio/best',
-    'outtmpl': '%(title)s.%(ext)s', # Necessary parameter to import youtube-dl's naming scheme into this program.
     'postprocessors': [{
         'key': 'FFmpegExtractAudio',
         'preferredcodec': 'wav',
@@ -23,52 +39,69 @@ ydl_opts = {
     }],
 }
 
-# Search and download.
-infile = 'ytsearch:' + infile
-with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-    info = ydl.extract_info(infile)
-print('Ｄｏｗｎｌｏａｄｉｎｇ　' + info['entries'][0]['title'])
-print('Ｐｌｅａｓｅ　ｗａｉｔ．．．')
-downloaded = info['entries'][0]['title'] + '.wav'
 
-# # vaporwave parameters
-fx = (
-        AudioEffectsChain()
-        .speed(0.87) # 0.87 for Floral Shoppe
-        # .chorus(0.4, 0.6, [[55, 0.4, 0.55, .5, 't']])
-        .reverb(
-               reverberance=30,
-               hf_damping=50,
-               room_scale=100,
-               stereo_depth=100,
-               pre_delay=20,
-               wet_gain=0,
-               wet_only=False
-               )
-    )
+def download(query):
+    print(f' ．．．ｓｅａｒｃｈｉｎｇ  ｆｏｒ  "{query}" ．．．')
 
-outfile = downloaded.replace('.wav', '') + ' - ｖａｐｏｒｗａｖｅ.mp3'
+    wav_path = f'{output_dir}/{random_filename()}.wav'
+    outtmpl = wav_path.replace('.wav', '.%(ext)s')
+    ydl_config['outtmpl'] = outtmpl
+    with youtube_dl.YoutubeDL(ydl_config) as ydl:
+        info = ydl.extract_info(f'ytsearch:{query}')
 
-# # Take the downloaded file and remove spaces from the filename.
-# # librosa will not work with spaces in the filename.
-downloaded = downloaded.replace(' ', '')
-os.rename(info['entries'][0]['title'] + '.wav', downloaded)
+    title = info["entries"][0]["title"]
+    print(f' ．．．fｏｕｎｄ  "{title}"， ｄｏｗｎｌｏａｄｅｄ  ｔｏ  ./{wav_path} ．．．')
 
-# # Or, apply the effects directly to a ndarray.
-from librosa import load
-y, sr = load(downloaded, sr=None)
-y = fx(y)
+    return title, wav_path
 
-# # Apply the effects and return the results as a ndarray.
-y = fx(downloaded)
 
-# # Apply the effects to a ndarray but store the resulting audio to disk.
-fx(y, 'VAPOR.wav')
+def random_filename():
+    return hashlib.md5(uuid.uuid4().bytes).hexdigest()[:12]
 
-# # Convert VAPOR.wav to an .mp3.
-AudioSegment.from_wav('VAPOR.wav').export(outfile, format='mp3')
 
-# # Remove downloaded files and quit.
-os.remove(downloaded)
-os.remove('VAPOR.wav')
-print('Ｔｉｄｙｉｎｇ　ｕｐ．．．')
+def apply_fx(in_wav_path):
+    print(f' ．．．ａｐｐｌｙｉｎｇ  ｖａｐｏｒｗａｖｅ  ｅｆｆｅｃｔｓ  ｔｏ  ./{in_wav_path} ．．．')
+
+    out_wav_path = in_wav_path.replace('.wav', '.vw.wav')
+    vw_fx_chain(in_wav_path, out_wav_path)
+
+    print(f' ．．．ｖｗ  ｒｅｓｕｌｔ  ｓｔｏｒｅｄ  ｉｎ  ./{out_wav_path} ．．．')
+
+    return out_wav_path
+
+
+def wav_to_mp3(wav_path):
+    print(f' ．．． ｃｏｎｖｅｒｔｉｎｇ  ./{wav_path}  ｉｎｔｏ  ｍｐ３ ．．．')
+
+    mp3_path = wav_path.replace('.wav', '.mp3')
+    with open(wav_path, 'rb') as wav_file:
+        wav = AudioSegment.from_file(wav_file, format='wav')
+    wav.export(mp3_path, format='mp3')
+
+    return mp3_path
+
+
+def remove_all(*paths):
+    print(' ．．．ｔｉｄｙｉｎｇ　ｕｐ ．．．')
+    for path in paths:
+        print(f' ．．． ｒｅｍｏｖｉｎｇ  {path} ．．．')
+        os.remove(path)
+
+
+def main(query):
+    print('Ｓｔａｒｔｉｎｇ  ｐｒｏｃｅｓｓ ．．．')
+
+    title, in_wav_path = download(query)
+    out_wav_path = apply_fx(in_wav_path)
+    in_mp3_path = wav_to_mp3(in_wav_path)
+    out_mp3_path = wav_to_mp3(out_wav_path)
+    os.rename(in_mp3_path, f'{output_dir}/{title}.mp3')
+    os.rename(out_mp3_path, f'{output_dir}/{title} - ｖａｐｏｒｗａｖｅ.mp3')
+    remove_all(in_wav_path, out_wav_path)
+
+    print('．．． ｆｉｎｉｓｈｅｄ．')
+
+
+if __name__ == '__main__':
+    query = sys.argv[1]
+    main(query)
