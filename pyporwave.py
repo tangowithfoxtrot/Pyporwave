@@ -14,8 +14,8 @@ from pydub import AudioSegment
 
 vw_fx_chain = (
     AudioEffectsChain()
-    .speed(0.87)  # 0.87 for Floral Shoppe
-    # .chorus(0.4, 0.6, [[55, 0.4, 0.55, .5, 't']])
+    .speed(0.75)
+    .chorus(0.4, 0.6, [[55, 0.4, 0.55, .5, 't']])
     .reverb(
        reverberance=30,
        hf_damping=50,
