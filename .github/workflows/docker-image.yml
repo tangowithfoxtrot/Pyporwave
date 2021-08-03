@@ -24,5 +24,7 @@ jobs:
       run: docker build . --file Dockerfile --tag ${{ secrets.DOCKER_USER }}/pyporwave:latest
     - name: docker push
       run: docker push ${{ secrets.DOCKER_USER }}/pyporwave:latest
-    - name: docker push readme
-      run: docker pushrm ../../README.md
+
+    - name: update-container-description-action
+      uses: christian-korneck/update-container-description-action@v1
+
