@@ -29,9 +29,9 @@ jobs:
       uses: christian-korneck/update-container-description-action@v1
       env:
         DOCKER_USER: ${{ secrets.DOCKER_USER }}
-        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        DOCKER_PASS: ${{ secrets.DOCKER_PASSWORD }}
       with:
-        destination_container_repo: ${{ secrets.DOCKER_USER }}/pyporwave:latest
+        destination_container_repo: ${{ secrets.DOCKER_USER }}/pyporwave
         provider: dockerhub
         short_description: 'A Python program to vaporwave-ify any song you want.'
         readme_file: 'README.md'
