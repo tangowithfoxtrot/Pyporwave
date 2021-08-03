@@ -1,6 +1,8 @@
-FROM jupyter/scipy-notebook:latest
+FROM python:slim-buster
 
 USER root
+
+WORKDIR /root
 
 RUN apt-get update && apt-get install -y ffmpeg sox
 RUN pip install virtualenv
@@ -14,3 +16,4 @@ RUN pip install -r requirements.txt
 
 COPY pyporwave.py .
 ENTRYPOINT ["python3", "pyporwave.py"]
+
