@@ -25,6 +25,11 @@ jobs:
     - name: docker push
       run: docker push ${{ secrets.DOCKER_USER }}/pyporwave:latest
 
-    - name: update-container-description-action
+    - name: push README to Dockerhub
       uses: christian-korneck/update-container-description-action@v1
+      with:
+        destination_container_repo: ${{ secrets.DOCKER_USER }}/pyporwave:latest
+        provider: dockerhub
+        short_description: 'A Python program to vaporwave-ify any song you want.'
+        readme_file: 'README.md'
 
