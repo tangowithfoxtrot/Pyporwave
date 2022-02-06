@@ -7,7 +7,7 @@ import os
 import sys
 import uuid
 
-import youtube_dl
+import yt_dlp as youtube_dl
 
 from pysndfx import AudioEffectsChain
 from pydub import AudioSegment

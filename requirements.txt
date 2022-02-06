@@ -1,3 +1,3 @@
 pydub==0.23.1
 pysndfx==0.3.6
-youtube-dl==v2021.06.06
+yt-dlp==v2022.02.04
