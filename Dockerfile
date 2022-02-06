@@ -4,7 +4,7 @@ USER root
 
 WORKDIR /root
 
-RUN apk add --update --no-cache py3-numpy ffmpeg sox musl-dev linux-headers g++
+RUN apk add --update --no-cache ffmpeg sox musl-dev g++
 
 COPY requirements.txt /root/
 RUN pip install -r requirements.txt
