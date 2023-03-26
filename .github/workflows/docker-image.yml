@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: echo ip
-      run: curl ifconfig.co
+      run: curl -s https://api.ipify.org
     - name: Bitwarden Secrets Manager GitHub Action
       uses: bitwarden/sm-action@v1.0.0
       with:
