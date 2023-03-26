@@ -7,6 +7,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+    - name: echo ip
+      run: ip a
     - name: Bitwarden Secrets Manager GitHub Action
       uses: bitwarden/sm-action@v1.0.0
       with:
