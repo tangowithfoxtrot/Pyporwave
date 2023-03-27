@@ -23,5 +23,5 @@ jobs:
         docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
     - name: docker build
       run: docker build . --file Dockerfile --tag $DOCKER_USER/pyporwave:latest
-    - name: docker push
-      run: docker push $DOCKER_USER/pyporwave:latest
+#     - name: docker push
+#       run: docker push $DOCKER_USER/pyporwave:latest
